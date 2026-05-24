@@ -2,11 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import AgentTimeline from "@/components/AgentTimeline";
-import ReportView from "@/components/ReportView";
-import ExtractedDocument from "@/components/ExtractedDocument";
-import SourcesList from "@/components/SourcesList";
+import EvaluationView from "@/components/EvaluationView";
 import { openEventStream } from "@/lib/api";
 import type {
   AgentEvent,
@@ -33,7 +29,6 @@ export default function Results() {
 
   useEffect(() => {
     if (!jobId) return;
-    // Reuse a single EventSource across StrictMode's double-invoke in dev.
     if (esRef.current) return;
 
     const es = openEventStream(jobId, (e) => {
@@ -59,7 +54,6 @@ export default function Results() {
     esRef.current = es;
 
     return () => {
-      // Only tear down on real navigation away (not StrictMode remount).
       if (typeof window !== "undefined") {
         window.addEventListener("beforeunload", () => es.close(), { once: true });
       }
@@ -67,32 +61,21 @@ export default function Results() {
   }, [jobId]);
 
   return (
-    <div className="container">
-      <Link href="/" className="lane-sub">← New verification</Link>
-      <h1 className="title" style={{ marginTop: 12 }}>Verification Pipeline</h1>
-      <p className="subtitle">{done ? "Complete" : stage}</p>
-
-      {error && <div className="card error">Error: {error}</div>}
-
-      <div className="grid2">
-        <div className="card">
-          <div className="section-title" style={{ marginTop: 0 }}>Live Agent Activity</div>
-          <AgentTimeline events={events} />
-        </div>
-        <div>
-          {(application || idData) && (
-            <ExtractedDocument application={application} id={idData} />
-          )}
-          <SourcesList sources={sources} cost={researchCost} mapsUrl={mapsUrl} />
-          {report ? (
-            <ReportView report={report} />
-          ) : (
-            <div className="card lane-sub">
-              The detailed evidence report will appear here once Agent C finishes.
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <EvaluationView
+      events={events}
+      application={application}
+      idData={idData}
+      sources={sources}
+      mapsUrl={mapsUrl}
+      researchCost={researchCost}
+      report={report}
+      stage={stage}
+      done={done}
+      error={error}
+      live
+      evalId={jobId}
+      hasPdf
+      hasId
+    />
   );
 }

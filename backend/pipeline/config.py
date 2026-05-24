@@ -19,3 +19,8 @@ VALYU_API_KEY = os.getenv("VALYU_API_KEY", "")
 VALYU_DR_MODE = os.getenv("VALYU_DR_MODE", "fast")  # fast | standard | heavy | max
 
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+
+# Postgres persistence for past evaluations. Uses the asyncpg driver.
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgresql+asyncpg://dcf:dcf@localhost:5432/dcf"
+)

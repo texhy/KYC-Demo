@@ -1,7 +1,29 @@
-import type { AgentEvent } from "./types";
+import type { AgentEvent, EvaluationList, EvaluationRecord } from "./types";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+export async function listEvaluations(params: {
+  search?: string;
+  status?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<EvaluationList> {
+  const qs = new URLSearchParams();
+  if (params.search) qs.set("search", params.search);
+  if (params.status) qs.set("status", params.status);
+  qs.set("limit", String(params.limit ?? 10));
+  qs.set("offset", String(params.offset ?? 0));
+  const res = await fetch(`${API_URL}/api/evaluations?${qs.toString()}`);
+  if (!res.ok) throw new Error("Failed to load evaluations");
+  return res.json();
+}
+
+export async function getEvaluation(id: string): Promise<EvaluationRecord> {
+  const res = await fetch(`${API_URL}/api/evaluations/${id}`);
+  if (!res.ok) throw new Error("Evaluation not found");
+  return res.json();
+}
 
 export async function submitVerification(
   pdf: File,

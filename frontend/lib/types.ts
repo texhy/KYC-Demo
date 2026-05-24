@@ -115,3 +115,35 @@ export type VerificationReport = {
   red_flags: RedFlag[];
   open_questions: string[];
 };
+
+export type EvaluationStatus = "running" | "done" | "error";
+
+export type EvaluationSummary = {
+  id: string;
+  status: EvaluationStatus;
+  company_name?: string | null;
+  loan_amount?: string | null;
+  incorporation_state?: string | null;
+  pdf_filename?: string | null;
+  created_at?: string | null;
+  completed_at?: string | null;
+  error?: string | null;
+  has_pdf?: boolean;
+  has_id?: boolean;
+  id_mime?: string | null;
+};
+
+export type EvaluationList = {
+  items: EvaluationSummary[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type EvaluationRecord = EvaluationSummary & {
+  report?: VerificationReport | null;
+  application?: ApplicationData | null;
+  id?: IdData | null;
+  research?: { sources?: ResearchSource[]; cost?: number; maps_url?: string } | null;
+  events: AgentEvent[];
+};

@@ -19,6 +19,9 @@ class EventBus:
     def __init__(self) -> None:
         self._queue: asyncio.Queue[Optional[AgentEvent]] = asyncio.Queue()
         self._closed = False
+        # Full ordered log of every event emitted, kept so a finished run can be
+        # persisted and later replayed in the saved-evaluation view.
+        self.history: list[AgentEvent] = []
 
     async def emit(
         self,
@@ -30,7 +33,9 @@ class EventBus:
         if self._closed:
             return
         log.info("EMIT [%-5s] (%s) %s", type, agent or "-", message or "")
-        await self._queue.put(AgentEvent(type=type, agent=agent, message=message, data=data))
+        event = AgentEvent(type=type, agent=agent, message=message, data=data)
+        self.history.append(event)
+        await self._queue.put(event)
 
     async def close(self) -> None:
         if not self._closed:

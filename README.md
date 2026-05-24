@@ -19,6 +19,17 @@ git clone https://github.com/texhy/KYC-Demo.git
 cd KYC-Demo
 ```
 
+### Database (Postgres)
+
+Evaluations are persisted to Postgres so past runs can be revisited. Start a local
+instance with Docker (matches the default `DATABASE_URL`):
+
+```bash
+docker compose up -d db
+```
+
+Tables are created automatically the first time the backend starts.
+
 ### Backend
 
 ```bash
